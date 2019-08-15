@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ets.dictionary.settlement.dao.SettlementDao">
+
+
+	<!-- 获取角色权限列表 -->
+	<select id="selectSettlement" parameterType="map"  resultType="com.ets.dictionary.settlement.entity.nb_settlement_dict">
+			<!-- <![CDATA[select * from (select u.*,rownum rn from nb_settlement_dict u where rownum <= #{page} order by u.ctime desc) where rn > #{limit}]]>  -->
+			select * from 
+				(
+					select * from 
+					(
+						select u.*,rownum rn from 
+						(
+							select * from nb_settlement_dict u 
+							 <!-- <include refid="where"></include>  -->
+							 order by u.ctime desc
+						) u 
+						where rownum <![CDATA[<=]]> #{page} 
+					) 
+					where rn > #{limit}
+				)
+    </select>
+    
+    <!-- 获取总记录数 -->
+    <select id="selectCount"  resultType="long">
+    	select count(*) from nb_settlement_dict
+    </select>
+    
+    <!-- 新增 -->
+    <insert id="insertSettlement" parameterType="com.ets.dictionary.settlement.entity.nb_settlement_dict">
+        insert into nb_settlement_dict values(#{id},#{dictype},#{code},#{settlementmethod},#{settlementrules},#{describe},#{ctime},#{remarks})
+    </insert>
+    
+    <!-- 更新资源 -->
+    <update id="updateSettlement" parameterType="com.ets.dictionary.settlement.entity.nb_settlement_dict">
+        update nb_settlement_dict set describe=#{describe},settlementmethod=#{settlementmethod},settlementrules=#{settlementrules},code=#{code} where id=#{id}
+    </update>
+    
+    <!-- 查看资源 -->
+    <select id="infoSettlement" resultType="com.ets.dictionary.settlement.entity.nb_settlement_dict" parameterType="java.lang.String">
+        select * from nb_settlement_dict where id=#{id}
+    </select>
+
+    <!-- 查看资源 -->
+    <select id="infoSettlementList" resultType="com.ets.dictionary.settlement.entity.nb_settlement_dict" parameterType="java.lang.String">
+        select * from nb_settlement_dict where id in
+        <foreach item="empnoItem" collection="array" open="(" separator="," close=")">
+            #{empnoItem}
+        </foreach>
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteSettlement" parameterType="java.lang.String">
+        delete from nb_settlement_dict where id in
+        <foreach item="empnoItem" collection="array" open="(" separator="," close=")">
+            #{empnoItem}
+        </foreach>
+    </delete>
+    <select id="findSettlement" parameterType="java.lang.String" resultType="long">
+        select count(*) from NB_SETTLEMENT_DICT where settlementmethod=#{settlementmethod}
+    </select>
+</mapper>
